@@ -1,0 +1,2923 @@
+{
+ "_source": "regenerated with neutral names (dkimpy 1.1.8 signer, fresh keys in zone.json); verdicts per message and account configuration are the ones recorded by the provider-verdicts offline evaluation run (recommended rule)",
+ "configs": {
+  "selfhosted": {
+   "name": "selfhosted",
+   "authserv_id": null,
+   "provider_sealers": [],
+   "forwarder_sealers": []
+  },
+  "provider": {
+   "name": "provider",
+   "authserv_id": "mx.provider.test",
+   "provider_sealers": [
+    "provider.test"
+   ],
+   "forwarder_sealers": []
+  },
+  "list": {
+   "name": "list",
+   "authserv_id": null,
+   "provider_sealers": [],
+   "forwarder_sealers": [
+    "list.test",
+    "arc.list.test",
+    "fwd.test"
+   ],
+   "sealer_signers": {
+    "fwd.test": [
+     {
+      "signer": "fwdgroups.test",
+      "kind": "exact",
+      "ship": true
+     },
+     {
+      "signer": "tenants.test",
+      "kind": "tenant",
+      "ship": true
+     },
+     {
+      "signer": "esp.test",
+      "kind": "exact",
+      "ship": false
+     }
+    ]
+   }
+  }
+ },
+ "full": {
+  "aligned_nodmarc": {
+   "selfhosted": "verified",
+   "provider": "verified",
+   "list": "verified"
+  },
+  "arc_attacker_sealed": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "arc_list_broken": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "arc_list_valid": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "verified"
+  },
+  "arc_neg_chain_broken_after_trusted": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "arc_neg_trusted_dkim_fail_aligned": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "arc_neg_trusted_dkim_unaligned": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "arc_neg_trusted_dmarc_fail": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "arc_neg_trusted_pass_no_header_from": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "arc_neg_trusted_pass_other_domain": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "arc_neg_trusted_pass_suffix_domain": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "arc_neg_untrusted_lower_pass": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "arc_neg_untrusted_upper_pass": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "arc_pos_trusted_dkim_aligned": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "verified"
+  },
+  "arc_two_hops": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "verified"
+  },
+  "arcf_neg_forged_arh_copied": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "arcf_neg_no_sealer_dkim": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "arcf_neg_sealer_dkim_invalid": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "arcf_neg_sealer_dkim_no_from": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "arcf_neg_sealer_dkim_no_list_id": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "arcf_neg_sealer_dkim_other_domain": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "arcf_pos_relay_signed": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "verified"
+  },
+  "arcf_pos_sealer_org_domain": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "verified"
+  },
+  "arcf_pos_sealer_signed": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "verified"
+  },
+  "arcf_res_forged_arh_copied_signed": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "verified"
+  },
+  "arcp_neg_pair_no_from": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "arcp_neg_pair_no_list_id": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "arcp_neg_pair_other_sealer": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "arcp_neg_tenant_unbound": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "arcp_neg_unlisted_pair": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "arcp_pos_listed_pair": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "verified"
+  },
+  "arcp_pos_tenant_bound": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "verified"
+  },
+  "arh_attacker_otherid_above": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "arh_attacker_sameid_above": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "arh_attacker_sameid_below": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "arh_missing": {
+   "selfhosted": "verified",
+   "provider": "verified",
+   "list": "verified"
+  },
+  "arh_missing_forged_sameid": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "arh_missing_spoof": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "arh_no_authservid": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "arh_sealed_replay_body_swapped": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "arh_trusted_fail": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "arh_trusted_pass": {
+   "selfhosted": "verified",
+   "provider": "verified",
+   "list": "verified"
+  },
+  "arh_trusted_pass_no_seal": {
+   "selfhosted": "verified",
+   "provider": "verified",
+   "list": "verified"
+  },
+  "beacon_unique_selector": {
+   "selfhosted": "verified",
+   "provider": "verified",
+   "list": "verified"
+  },
+  "dkim_body_modified": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "dkim_dual_rsa_ed25519": {
+   "selfhosted": "verified",
+   "provider": "verified",
+   "list": "verified"
+  },
+  "dkim_ed25519": {
+   "selfhosted": "verified",
+   "provider": "verified",
+   "list": "verified"
+  },
+  "dkim_header_modified": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "dkim_key_4096_tcp": {
+   "selfhosted": "verified",
+   "provider": "verified",
+   "list": "verified"
+  },
+  "dkim_key_512": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "dkim_key_cname": {
+   "selfhosted": "verified",
+   "provider": "verified",
+   "list": "verified"
+  },
+  "dkim_key_missing": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "dkim_key_prime_modulus": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "dkim_key_revoked": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "dkim_l_appended": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "dkim_l_exact": {
+   "selfhosted": "verified",
+   "provider": "verified",
+   "list": "verified"
+  },
+  "dkim_relaxed_survives_refold": {
+   "selfhosted": "verified",
+   "provider": "verified",
+   "list": "verified"
+  },
+  "dkim_rsa_relaxed": {
+   "selfhosted": "verified",
+   "provider": "verified",
+   "list": "verified"
+  },
+  "dkim_rsa_sha1": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "dkim_rsa_simple": {
+   "selfhosted": "verified",
+   "provider": "verified",
+   "list": "verified"
+  },
+  "dkim_simple_breaks_refold": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "dmarc_org_fallback": {
+   "selfhosted": "verified",
+   "provider": "verified",
+   "list": "verified"
+  },
+  "dmarc_p_none_fail": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "dmarc_quarantine_fail": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "dmarc_relaxed_subdomain": {
+   "selfhosted": "verified",
+   "provider": "verified",
+   "list": "verified"
+  },
+  "dmarc_sp_subdomain": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "dmarc_strict_subdomain": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "dns_giant": {
+   "selfhosted": "none",
+   "provider": "none",
+   "list": "none"
+  },
+  "dns_huge": {
+   "selfhosted": "none",
+   "provider": "none",
+   "list": "none"
+  },
+  "dns_many": {
+   "selfhosted": "none",
+   "provider": "none",
+   "list": "none"
+  },
+  "dns_nonprint": {
+   "selfhosted": "none",
+   "provider": "none",
+   "list": "none"
+  },
+  "dns_servfail": {
+   "selfhosted": "none",
+   "provider": "none",
+   "list": "none"
+  },
+  "dns_slow": {
+   "selfhosted": "none",
+   "provider": "none",
+   "list": "none"
+  },
+  "from_added_not_oversigned": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "from_added_oversigned": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "from_replaced": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "ho_dns_servfail": {
+   "selfhosted": "none",
+   "provider": "none",
+   "list": "none"
+  },
+  "ho_esp_only_nodmarc": {
+   "selfhosted": "unaligned",
+   "provider": "unaligned",
+   "list": "unaligned"
+  },
+  "ho_key_512": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "ho_key_missing": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "ho_key_prime_modulus": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "ho_key_revoked": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "ho_l_appended": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "ho_l_exact": {
+   "selfhosted": "verified",
+   "provider": "verified",
+   "list": "verified"
+  },
+  "ho_legit_ed25519": {
+   "selfhosted": "verified",
+   "provider": "verified",
+   "list": "verified"
+  },
+  "ho_legit_refolded_relaxed": {
+   "selfhosted": "verified",
+   "provider": "verified",
+   "list": "verified"
+  },
+  "ho_legit_relaxed": {
+   "selfhosted": "verified",
+   "provider": "verified",
+   "list": "verified"
+  },
+  "ho_legit_simple": {
+   "selfhosted": "verified",
+   "provider": "verified",
+   "list": "verified"
+  },
+  "ho_nodmarc_aligned": {
+   "selfhosted": "verified",
+   "provider": "verified",
+   "list": "verified"
+  },
+  "ho_nodmarc_unsigned": {
+   "selfhosted": "none",
+   "provider": "none",
+   "list": "none"
+  },
+  "ho_p_none_spoof": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "ho_replay_real_headers": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "ho_rsa_sha1": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "ho_signed_header_modified": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "ho_spoof_attacker_signed": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "ho_spoof_garbage_b": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "ho_spoof_transplanted_sig": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "ho_spoof_unsigned": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "ho_two_from": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "large_body_open": {
+   "selfhosted": "verified",
+   "provider": "verified",
+   "list": "verified"
+  },
+  "multi_domain_and_esp": {
+   "selfhosted": "verified",
+   "provider": "verified",
+   "list": "verified"
+  },
+  "multi_esp_only_dmarc": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "multi_esp_only_nodmarc": {
+   "selfhosted": "unaligned",
+   "provider": "unaligned",
+   "list": "unaligned"
+  },
+  "multi_one_valid": {
+   "selfhosted": "verified",
+   "provider": "verified",
+   "list": "verified"
+  },
+  "unsigned_bank_spoof": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "unsigned_nodmarc": {
+   "selfhosted": "none",
+   "provider": "none",
+   "list": "none"
+  }
+ },
+ "_source_header_only": "regenerated as above; header-only verdicts recorded by the provider-verdicts header-only run (selfhosted configuration)",
+ "header_only": {
+  "aligned_nodmarc": "pending",
+  "arc_attacker_sealed": "failed",
+  "arc_list_broken": "failed",
+  "arc_list_valid": "failed",
+  "arc_neg_chain_broken_after_trusted": "failed",
+  "arc_neg_trusted_dkim_fail_aligned": "failed",
+  "arc_neg_trusted_dkim_unaligned": "failed",
+  "arc_neg_trusted_dmarc_fail": "failed",
+  "arc_neg_trusted_pass_no_header_from": "failed",
+  "arc_neg_trusted_pass_other_domain": "failed",
+  "arc_neg_trusted_pass_suffix_domain": "failed",
+  "arc_neg_untrusted_lower_pass": "failed",
+  "arc_neg_untrusted_upper_pass": "failed",
+  "arc_pos_trusted_dkim_aligned": "failed",
+  "arc_two_hops": "failed",
+  "arcf_neg_forged_arh_copied": "failed",
+  "arcf_neg_no_sealer_dkim": "failed",
+  "arcf_neg_sealer_dkim_invalid": "failed",
+  "arcf_neg_sealer_dkim_no_from": "failed",
+  "arcf_neg_sealer_dkim_no_list_id": "failed",
+  "arcf_neg_sealer_dkim_other_domain": "failed",
+  "arcf_pos_relay_signed": "pending",
+  "arcf_pos_sealer_org_domain": "failed",
+  "arcf_pos_sealer_signed": "failed",
+  "arcf_res_forged_arh_copied_signed": "failed",
+  "arcp_neg_pair_no_from": "failed",
+  "arcp_neg_pair_no_list_id": "failed",
+  "arcp_neg_pair_other_sealer": "failed",
+  "arcp_neg_tenant_unbound": "failed",
+  "arcp_neg_unlisted_pair": "failed",
+  "arcp_pos_listed_pair": "failed",
+  "arcp_pos_tenant_bound": "failed",
+  "arh_attacker_otherid_above": "failed",
+  "arh_attacker_sameid_above": "failed",
+  "arh_attacker_sameid_below": "failed",
+  "arh_missing": "pending",
+  "arh_missing_forged_sameid": "failed",
+  "arh_missing_spoof": "failed",
+  "arh_no_authservid": "failed",
+  "arh_sealed_replay_body_swapped": "pending",
+  "arh_trusted_fail": "failed",
+  "arh_trusted_pass": "pending",
+  "arh_trusted_pass_no_seal": "pending",
+  "beacon_unique_selector": "pending",
+  "dkim_body_modified": "pending",
+  "dkim_dual_rsa_ed25519": "pending",
+  "dkim_ed25519": "pending",
+  "dkim_header_modified": "failed",
+  "dkim_key_4096_tcp": "pending",
+  "dkim_key_512": "failed",
+  "dkim_key_cname": "pending",
+  "dkim_key_missing": "failed",
+  "dkim_key_prime_modulus": "failed",
+  "dkim_key_revoked": "failed",
+  "dkim_l_appended": "failed",
+  "dkim_l_exact": "pending",
+  "dkim_relaxed_survives_refold": "pending",
+  "dkim_rsa_relaxed": "pending",
+  "dkim_rsa_sha1": "failed",
+  "dkim_rsa_simple": "pending",
+  "dkim_simple_breaks_refold": "failed",
+  "dmarc_org_fallback": "pending",
+  "dmarc_p_none_fail": "failed",
+  "dmarc_quarantine_fail": "failed",
+  "dmarc_relaxed_subdomain": "pending",
+  "dmarc_sp_subdomain": "failed",
+  "dmarc_strict_subdomain": "failed",
+  "dns_giant": "none",
+  "dns_huge": "none",
+  "dns_many": "none",
+  "dns_nonprint": "none",
+  "dns_servfail": "none",
+  "dns_slow": "none",
+  "from_added_not_oversigned": "failed",
+  "from_added_oversigned": "failed",
+  "from_replaced": "failed",
+  "ho_dns_servfail": "none",
+  "ho_esp_only_nodmarc": "pending",
+  "ho_key_512": "failed",
+  "ho_key_missing": "failed",
+  "ho_key_prime_modulus": "failed",
+  "ho_key_revoked": "failed",
+  "ho_l_appended": "failed",
+  "ho_l_exact": "pending",
+  "ho_legit_ed25519": "pending",
+  "ho_legit_refolded_relaxed": "pending",
+  "ho_legit_relaxed": "pending",
+  "ho_legit_simple": "pending",
+  "ho_nodmarc_aligned": "pending",
+  "ho_nodmarc_unsigned": "none",
+  "ho_p_none_spoof": "failed",
+  "ho_replay_real_headers": "pending",
+  "ho_rsa_sha1": "failed",
+  "ho_signed_header_modified": "failed",
+  "ho_spoof_attacker_signed": "failed",
+  "ho_spoof_garbage_b": "failed",
+  "ho_spoof_transplanted_sig": "failed",
+  "ho_spoof_unsigned": "failed",
+  "ho_two_from": "failed",
+  "large_body_open": "pending",
+  "multi_domain_and_esp": "pending",
+  "multi_esp_only_dmarc": "failed",
+  "multi_esp_only_nodmarc": "pending",
+  "multi_one_valid": "pending",
+  "unsigned_bank_spoof": "failed",
+  "unsigned_nodmarc": "none"
+ },
+ "_source_verdicts": "regenerated as above; provider verdicts recorded by the provider-verdicts offline provider-verdict run",
+ "verdict_configs": {
+  "none": {
+   "name": "none",
+   "authserv_id": null,
+   "provider_sealers": [],
+   "forwarder_sealers": []
+  },
+  "stamp_prepended": {
+   "name": "stamp_prepended",
+   "authserv_id": "mx.selfhosted.test",
+   "provider_sealers": [],
+   "forwarder_sealers": [],
+   "verdicts": {
+    "authserv": [
+     "mx.selfhosted.test"
+    ],
+    "server_hosts": [
+     "mx.selfhosted.test"
+    ],
+    "arh_methods": true,
+    "fields": {
+     "x-spam-status": "prepended",
+     "x-spam-flag": "prepended",
+     "x-spam-score": "prepended"
+    }
+   }
+  },
+  "stamp_appended": {
+   "name": "stamp_appended",
+   "authserv_id": null,
+   "provider_sealers": [],
+   "forwarder_sealers": [],
+   "verdicts": {
+    "authserv": [
+     "*.mx.rspamd.test"
+    ],
+    "server_hosts": [
+     "*.mx.rspamd.test"
+    ],
+    "bind": "x-rspamd-queue-id",
+    "fields": {
+     "x-spam-status": "appended_bound",
+     "x-spamd-result": "appended_bound",
+     "x-rspamd-action": "appended_bound"
+    }
+   }
+  },
+  "sealed_ms": {
+   "name": "sealed_ms",
+   "authserv_id": "mx.provider.test",
+   "provider_sealers": [
+    "provider.test"
+   ],
+   "forwarder_sealers": [],
+   "verdicts": {
+    "authserv": [],
+    "server_hosts": [],
+    "aar_methods": true,
+    "fields": {
+     "x-ms-exchange-organization-scl": "firewalled",
+     "x-forefront-antispam-report": "firewalled",
+     "x-microsoft-antispam": "firewalled"
+    }
+   }
+  }
+ },
+ "verdicts": {
+  "bound_bad_score": {
+   "none": {
+    "auth": "none",
+    "provider": null
+   },
+   "stamp_prepended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "arh",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 0,
+      "duplicate": 0,
+      "unparsable": 1,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "stamp_appended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 1,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "sealed_ms": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 1,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   }
+  },
+  "bound_field_count": {
+   "none": {
+    "auth": "none",
+    "provider": null
+   },
+   "stamp_prepended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "form": "none",
+     "error": "header over field limit"
+    }
+   },
+   "stamp_appended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "form": "none",
+     "error": "header over field limit"
+    }
+   },
+   "sealed_ms": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "form": "none",
+     "error": "header over field limit"
+    }
+   }
+  },
+  "bound_forefront_repeated_key": {
+   "none": {
+    "auth": "none",
+    "provider": null
+   },
+   "stamp_prepended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 1,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "stamp_appended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 1,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "sealed_ms": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 0,
+      "duplicate": 0,
+      "unparsable": 1,
+      "untrusted_copy": 0
+     }
+    }
+   }
+  },
+  "bound_forefront_unknown_cat": {
+   "none": {
+    "auth": "none",
+    "provider": null
+   },
+   "stamp_prepended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 1,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "stamp_appended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 1,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "sealed_ms": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 0,
+      "duplicate": 0,
+      "unparsable": 1,
+      "untrusted_copy": 0
+     }
+    }
+   }
+  },
+  "bound_garbage_status": {
+   "none": {
+    "auth": "none",
+    "provider": null
+   },
+   "stamp_prepended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "arh",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 0,
+      "duplicate": 0,
+      "unparsable": 1,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "stamp_appended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 1,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "sealed_ms": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 1,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   }
+  },
+  "bound_nonascii_tests": {
+   "none": {
+    "auth": "none",
+    "provider": null
+   },
+   "stamp_prepended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "arh",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 0,
+      "duplicate": 0,
+      "unparsable": 1,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "stamp_appended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 1,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "sealed_ms": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 1,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   }
+  },
+  "bound_oversized_field": {
+   "none": {
+    "auth": "none",
+    "provider": null
+   },
+   "stamp_prepended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "arh",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 0,
+      "duplicate": 0,
+      "unparsable": 1,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "stamp_appended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 1,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "sealed_ms": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 1,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   }
+  },
+  "bound_scl_out_of_range": {
+   "none": {
+    "auth": "none",
+    "provider": null
+   },
+   "stamp_prepended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 1,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "stamp_appended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 1,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "sealed_ms": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 0,
+      "duplicate": 0,
+      "unparsable": 1,
+      "untrusted_copy": 0
+     }
+    }
+   }
+  },
+  "bound_spamd_malformed": {
+   "none": {
+    "auth": "none",
+    "provider": null
+   },
+   "stamp_prepended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 1,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "stamp_appended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "received",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 0,
+      "duplicate": 0,
+      "unparsable": 1,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "sealed_ms": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 1,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   }
+  },
+  "bound_too_many_tests": {
+   "none": {
+    "auth": "none",
+    "provider": null
+   },
+   "stamp_prepended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "arh",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 0,
+      "duplicate": 0,
+      "unparsable": 1,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "stamp_appended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 1,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "sealed_ms": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 1,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   }
+  },
+  "pv_aar_compauth_sealed": {
+   "none": {
+    "auth": "none",
+    "provider": null
+   },
+   "stamp_prepended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 0,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "stamp_appended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 0,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "sealed_ms": {
+    "auth": "failed",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "compauth": {
+      "result": "fail",
+      "reason": "000"
+     },
+     "methods": [
+      {
+       "method": "compauth",
+       "result": "fail",
+       "reason": "000"
+      },
+      {
+       "method": "dnswl",
+       "result": "pass"
+      }
+     ],
+     "form": "aar",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 0,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   }
+  },
+  "pv_aar_compauth_unsealed": {
+   "none": {
+    "auth": "none",
+    "provider": null
+   },
+   "stamp_prepended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 0,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "stamp_appended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 0,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "sealed_ms": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 0,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   }
+  },
+  "pv_amavis_phish_rule": {
+   "none": {
+    "auth": "none",
+    "provider": null
+   },
+   "stamp_prepended": {
+    "auth": "none",
+    "provider": {
+     "spam": "yes",
+     "phish": true,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "arh",
+     "score_centi": 910,
+     "required_centi": 631,
+     "form": "prepended",
+     "engine": "amavis",
+     "rules": [
+      "URIBL_DBL_PHISH"
+     ],
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 0,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "stamp_appended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 1,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "sealed_ms": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 1,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   }
+  },
+  "pv_arh_methods_trusted": {
+   "none": {
+    "auth": "none",
+    "provider": null
+   },
+   "stamp_prepended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "arh",
+     "methods": [
+      {
+       "method": "iprev",
+       "result": "pass"
+      },
+      {
+       "method": "dnswl",
+       "result": "pass",
+       "zone": "list.dnswl.example"
+      }
+     ],
+     "form": "arh",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 0,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "stamp_appended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 0,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "sealed_ms": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 0,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   }
+  },
+  "pv_ms_outbound_copy_only": {
+   "none": {
+    "auth": "none",
+    "provider": null
+   },
+   "stamp_prepended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 1,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "stamp_appended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 1,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "sealed_ms": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 0,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 1
+     }
+    }
+   }
+  },
+  "pv_ms_phish_inbound": {
+   "none": {
+    "auth": "none",
+    "provider": null
+   },
+   "stamp_prepended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 3,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "stamp_appended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 3,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "sealed_ms": {
+    "auth": "none",
+    "provider": {
+     "spam": "yes",
+     "phish": true,
+     "malware": false,
+     "high": true,
+     "bulk": false,
+     "anchor": "none",
+     "scl": 9,
+     "sfv": "SPM",
+     "cat": "HPHSH",
+     "bcl": 0,
+     "form": "firewalled",
+     "engine": "eop",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 0,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   }
+  },
+  "pv_ms_untrusted_renamed": {
+   "none": {
+    "auth": "none",
+    "provider": null
+   },
+   "stamp_prepended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 1,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 1
+     }
+    }
+   },
+   "stamp_appended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 1,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 1
+     }
+    }
+   },
+   "sealed_ms": {
+    "auth": "none",
+    "provider": {
+     "spam": "yes",
+     "phish": true,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "scl": 5,
+     "sfv": "SPM",
+     "cat": "PHSH",
+     "form": "firewalled",
+     "engine": "eop",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 0,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 1
+     }
+    }
+   }
+  },
+  "pv_rspamd_appended_bound": {
+   "none": {
+    "auth": "none",
+    "provider": null
+   },
+   "stamp_prepended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 1,
+      "unbound": 2,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "stamp_appended": {
+    "auth": "none",
+    "provider": {
+     "spam": "yes",
+     "phish": true,
+     "malware": false,
+     "high": true,
+     "bulk": false,
+     "anchor": "received",
+     "score_centi": 1559,
+     "required_centi": 900,
+     "action": "reject",
+     "form": "appended_bound",
+     "engine": "rspamd",
+     "rules": [
+      "DBL_PHISH"
+     ],
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 0,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "sealed_ms": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 3,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   }
+  },
+  "pv_rspamd_order_status_first": {
+   "none": {
+    "auth": "none",
+    "provider": null
+   },
+   "stamp_prepended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 1,
+      "unbound": 0,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "stamp_appended": {
+    "auth": "none",
+    "provider": {
+     "spam": "no",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "arh",
+     "score_centi": 352,
+     "form": "appended_bound",
+     "engine": "rspamd",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 0,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "sealed_ms": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 1,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   }
+  },
+  "pv_sa_folded_tests": {
+   "none": {
+    "auth": "none",
+    "provider": null
+   },
+   "stamp_prepended": {
+    "auth": "none",
+    "provider": {
+     "spam": "yes",
+     "phish": true,
+     "malware": true,
+     "high": true,
+     "bulk": false,
+     "anchor": "arh",
+     "score_centi": 2030,
+     "required_centi": 500,
+     "form": "prepended",
+     "engine": "spamassassin",
+     "rules": [
+      "URIBL_DBL_MALWARE",
+      "URIBL_PH_SURBL"
+     ],
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 0,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "stamp_appended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 1,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "sealed_ms": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 1,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   }
+  },
+  "pv_sa_no_anchor": {
+   "none": {
+    "auth": "none",
+    "provider": null
+   },
+   "stamp_prepended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "received",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 1,
+      "unbound": 0,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "stamp_appended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 1,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "sealed_ms": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 1,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   }
+  },
+  "pv_sa_prepended_spam": {
+   "none": {
+    "auth": "none",
+    "provider": null
+   },
+   "stamp_prepended": {
+    "auth": "none",
+    "provider": {
+     "spam": "yes",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "arh",
+     "score_centi": 1240,
+     "required_centi": 631,
+     "form": "prepended",
+     "engine": "amavis",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 0,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "stamp_appended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 3,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "sealed_ms": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 3,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   }
+  },
+  "pv_spamd_result_false_over_required": {
+   "none": {
+    "auth": "none",
+    "provider": null
+   },
+   "stamp_prepended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 1,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "stamp_appended": {
+    "auth": "none",
+    "provider": {
+     "spam": "yes",
+     "phish": false,
+     "malware": true,
+     "high": false,
+     "bulk": false,
+     "anchor": "received",
+     "score_centi": 1200,
+     "required_centi": 900,
+     "form": "appended_bound",
+     "engine": "rspamd",
+     "rules": [
+      "MW_SURBL_MULTI"
+     ],
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 0,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "sealed_ms": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 1,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   }
+  },
+  "residual_import_forged_stamp": {
+   "none": {
+    "auth": "none",
+    "provider": null
+   },
+   "stamp_prepended": {
+    "auth": "none",
+    "provider": {
+     "spam": "yes",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "arh",
+     "score_centi": 1240,
+     "required_centi": 631,
+     "form": "prepended",
+     "engine": "amavis",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 0,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "stamp_appended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 1,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "sealed_ms": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 1,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   }
+  },
+  "spoof_forged_arh_dnsbl_pass_below": {
+   "none": {
+    "auth": "none",
+    "provider": null
+   },
+   "stamp_prepended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "arh",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 0,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "stamp_appended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 0,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "sealed_ms": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 0,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   }
+  },
+  "spoof_forged_rspamd_block_wrong_qid": {
+   "none": {
+    "auth": "none",
+    "provider": null
+   },
+   "stamp_prepended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 1,
+      "unbound": 0,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "stamp_appended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "received",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 1,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "sealed_ms": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 1,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   }
+  },
+  "spoof_forged_scl_minus1_duplicate": {
+   "none": {
+    "auth": "none",
+    "provider": null
+   },
+   "stamp_prepended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 2,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "stamp_appended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 2,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "sealed_ms": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 0,
+      "duplicate": 2,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   }
+  },
+  "spoof_forged_scl_minus1_only": {
+   "none": {
+    "auth": "none",
+    "provider": null
+   },
+   "stamp_prepended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 2,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "stamp_appended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 2,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "sealed_ms": {
+    "auth": "none",
+    "provider": {
+     "spam": "no",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "scl": -1,
+     "sfv": "SKN",
+     "form": "firewalled",
+     "engine": "eop",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 0,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   }
+  },
+  "spoof_forged_spam_status_no_above_block": {
+   "none": {
+    "auth": "none",
+    "provider": null
+   },
+   "stamp_prepended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 1,
+      "unbound": 0,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "stamp_appended": {
+    "auth": "none",
+    "provider": {
+     "spam": "yes",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "received",
+     "score_centi": 1120,
+     "form": "appended_bound",
+     "engine": "rspamd",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 1,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "sealed_ms": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 2,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   }
+  },
+  "spoof_forged_x_spam_status_no": {
+   "none": {
+    "auth": "none",
+    "provider": null
+   },
+   "stamp_prepended": {
+    "auth": "none",
+    "provider": {
+     "spam": "yes",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "arh",
+     "score_centi": 1240,
+     "required_centi": 631,
+     "form": "prepended",
+     "engine": "amavis",
+     "ignored": {
+      "below_anchor": 2,
+      "no_anchor": 0,
+      "unbound": 0,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "stamp_appended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 4,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "sealed_ms": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 4,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   }
+  },
+  "spoof_forged_x_spam_status_no_unscanned": {
+   "none": {
+    "auth": "none",
+    "provider": null
+   },
+   "stamp_prepended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "arh",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 2,
+      "no_anchor": 0,
+      "unbound": 0,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "stamp_appended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 2,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "sealed_ms": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 2,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   }
+  },
+  "spoof_rspamd_block_split_by_sender_field": {
+   "none": {
+    "auth": "none",
+    "provider": null
+   },
+   "stamp_prepended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 1,
+      "unbound": 0,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "stamp_appended": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "received",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 1,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   },
+   "sealed_ms": {
+    "auth": "none",
+    "provider": {
+     "spam": "unknown",
+     "phish": false,
+     "malware": false,
+     "high": false,
+     "bulk": false,
+     "anchor": "none",
+     "form": "none",
+     "ignored": {
+      "below_anchor": 0,
+      "no_anchor": 0,
+      "unbound": 1,
+      "duplicate": 0,
+      "unparsable": 0,
+      "untrusted_copy": 0
+     }
+    }
+   }
+  }
+ }
+}

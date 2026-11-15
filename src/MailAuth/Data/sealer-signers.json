@@ -1,0 +1,12 @@
+{
+ "comment": "Shipped sealer-signer list (the sealer DKIM requirement of the trusted-forwarder rule). Only entries with evidence that the sealer signs with this signer; kind exact: the signature's organizational domain equals signer; kind tenant: d= is a host under signer and equals the From domain or equals/is a parent of the List-Id.",
+ "version": 1,
+ "sealers": {
+  "microsoft.com": [
+   {
+    "signer": "onmicrosoft.com",
+    "kind": "tenant"
+   }
+  ]
+ }
+}

@@ -1,0 +1,309 @@
+{
+ "_source": "regenerated with neutral names (dkimpy 1.1.8 signer, fresh keys in zone.json); verdicts per message and account configuration are the ones recorded by the dkim-aot offline evaluation run (recommended rule)",
+ "configs": {
+  "selfhosted": {
+   "name": "selfhosted",
+   "authserv_id": null,
+   "provider_sealers": [],
+   "forwarder_sealers": []
+  },
+  "provider": {
+   "name": "provider",
+   "authserv_id": "mx.provider.test",
+   "provider_sealers": [
+    "provider.test"
+   ],
+   "forwarder_sealers": []
+  },
+  "list": {
+   "name": "list",
+   "authserv_id": null,
+   "provider_sealers": [],
+   "forwarder_sealers": [
+    "list.test"
+   ]
+  }
+ },
+ "full": {
+  "aligned_nodmarc": {
+   "selfhosted": "verified",
+   "provider": "verified",
+   "list": "verified"
+  },
+  "arc_attacker_sealed": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "arc_list_broken": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "arc_list_valid": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "verified"
+  },
+  "arc_two_hops": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "verified"
+  },
+  "arh_attacker_otherid_above": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "arh_attacker_sameid_above": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "arh_attacker_sameid_below": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "arh_missing": {
+   "selfhosted": "verified",
+   "provider": "verified",
+   "list": "verified"
+  },
+  "arh_missing_forged_sameid": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "arh_missing_spoof": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "arh_no_authservid": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "arh_sealed_replay_body_swapped": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "arh_trusted_fail": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "arh_trusted_pass": {
+   "selfhosted": "verified",
+   "provider": "verified",
+   "list": "verified"
+  },
+  "arh_trusted_pass_no_seal": {
+   "selfhosted": "verified",
+   "provider": "verified",
+   "list": "verified"
+  },
+  "beacon_unique_selector": {
+   "selfhosted": "verified",
+   "provider": "verified",
+   "list": "verified"
+  },
+  "dkim_body_modified": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "dkim_dual_rsa_ed25519": {
+   "selfhosted": "verified",
+   "provider": "verified",
+   "list": "verified"
+  },
+  "dkim_ed25519": {
+   "selfhosted": "verified",
+   "provider": "verified",
+   "list": "verified"
+  },
+  "dkim_header_modified": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "dkim_key_4096_tcp": {
+   "selfhosted": "verified",
+   "provider": "verified",
+   "list": "verified"
+  },
+  "dkim_key_512": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "dkim_key_cname": {
+   "selfhosted": "verified",
+   "provider": "verified",
+   "list": "verified"
+  },
+  "dkim_key_missing": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "dkim_key_prime_modulus": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "dkim_key_revoked": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "dkim_l_appended": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "dkim_l_exact": {
+   "selfhosted": "verified",
+   "provider": "verified",
+   "list": "verified"
+  },
+  "dkim_relaxed_survives_refold": {
+   "selfhosted": "verified",
+   "provider": "verified",
+   "list": "verified"
+  },
+  "dkim_rsa_relaxed": {
+   "selfhosted": "verified",
+   "provider": "verified",
+   "list": "verified"
+  },
+  "dkim_rsa_sha1": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "dkim_rsa_simple": {
+   "selfhosted": "verified",
+   "provider": "verified",
+   "list": "verified"
+  },
+  "dkim_simple_breaks_refold": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "dmarc_org_fallback": {
+   "selfhosted": "verified",
+   "provider": "verified",
+   "list": "verified"
+  },
+  "dmarc_p_none_fail": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "dmarc_quarantine_fail": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "dmarc_relaxed_subdomain": {
+   "selfhosted": "verified",
+   "provider": "verified",
+   "list": "verified"
+  },
+  "dmarc_sp_subdomain": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "dmarc_strict_subdomain": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "dns_giant": {
+   "selfhosted": "none",
+   "provider": "none",
+   "list": "none"
+  },
+  "dns_huge": {
+   "selfhosted": "none",
+   "provider": "none",
+   "list": "none"
+  },
+  "dns_many": {
+   "selfhosted": "none",
+   "provider": "none",
+   "list": "none"
+  },
+  "dns_nonprint": {
+   "selfhosted": "none",
+   "provider": "none",
+   "list": "none"
+  },
+  "dns_servfail": {
+   "selfhosted": "none",
+   "provider": "none",
+   "list": "none"
+  },
+  "dns_slow": {
+   "selfhosted": "none",
+   "provider": "none",
+   "list": "none"
+  },
+  "from_added_not_oversigned": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "from_added_oversigned": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "from_replaced": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "large_body_open": {
+   "selfhosted": "verified",
+   "provider": "verified",
+   "list": "verified"
+  },
+  "multi_domain_and_esp": {
+   "selfhosted": "verified",
+   "provider": "verified",
+   "list": "verified"
+  },
+  "multi_esp_only_dmarc": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "multi_esp_only_nodmarc": {
+   "selfhosted": "unaligned",
+   "provider": "unaligned",
+   "list": "unaligned"
+  },
+  "multi_one_valid": {
+   "selfhosted": "verified",
+   "provider": "verified",
+   "list": "verified"
+  },
+  "unsigned_bank_spoof": {
+   "selfhosted": "failed",
+   "provider": "failed",
+   "list": "failed"
+  },
+  "unsigned_nodmarc": {
+   "selfhosted": "none",
+   "provider": "none",
+   "list": "none"
+  }
+ }
+}

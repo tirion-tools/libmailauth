@@ -1,6 +1,5 @@
 using System.Formats.Tar;
 using System.IO.Compression;
-using System.Runtime.CompilerServices;
 using System.Text.Json;
 using MailAuth;
 
@@ -21,7 +20,7 @@ internal sealed class SignalsFixtureSet
 
     private static readonly Dictionary<string, SignalsFixtureSet> Cache = new(StringComparer.Ordinal);
 
-    public static string Root([CallerFilePath] string here = "") => Path.Combine(Path.GetDirectoryName(here)!, "Fixtures", "signals");
+    public static string Root() => Repo.Path("mail", "Tests", "Fixtures", "signals");
 
     public static SignalsFixtureSet Load(string name)
     {

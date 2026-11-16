@@ -7,7 +7,7 @@ namespace MailAuth;
 
 /// <summary>How a verdict field is bound to the account's server.</summary>
 [Flags]
-internal enum VerdictForm
+public enum VerdictForm
 {
     None = 0,
     /// <summary>Written above the server's own stamp (amavisd-new, SpamAssassin's rewrite): only instances above the
@@ -21,10 +21,10 @@ internal enum VerdictForm
 }
 
 /// <summary>What bound the verdict fields: the server's Authentication-Results, its Received, or nothing.</summary>
-internal enum VerdictAnchor { None, Arh, Received }
+public enum VerdictAnchor { None, Arh, Received }
 
 /// <summary>Instances of verdict fields that were not read, by reason.</summary>
-internal sealed class IgnoredCounts
+public sealed class IgnoredCounts
 {
     /// <summary>Below the server's anchor Authentication-Results (another hop wrote them).</summary>
     public uint BelowAnchor { get; set; }
@@ -44,7 +44,7 @@ internal sealed class IgnoredCounts
 /// Per-account provider-verdict configuration: the server's authserv-id and Received host patterns, the form of each
 /// field it writes, the bind field, and whether methods are read from the provider-sealed AAR or the anchor ARH.
 /// </summary>
-internal sealed record VerdictConfig(string[] Authserv, string[] ServerHosts, IReadOnlyDictionary<string, VerdictForm> Fields,
+public sealed record VerdictConfig(string[] Authserv, string[] ServerHosts, IReadOnlyDictionary<string, VerdictForm> Fields,
                                      string BindField, bool AarMethods, bool ArhMethods)
 {
     public static readonly string[] KnownFields =
@@ -85,7 +85,7 @@ internal sealed record VerdictConfig(string[] Authserv, string[] ServerHosts, IR
 /// and the grammars of those fields.
 /// Any limit violation makes that field unparsable; nothing is guessed.
 /// </summary>
-internal static partial class ProviderVerdicts
+public static partial class ProviderVerdicts
 {
     public const int MaxHeaderFields = 1000;
     public const int MaxFieldBytes = 8192;

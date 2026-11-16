@@ -4,31 +4,37 @@ using MimeKit.Cryptography;
 namespace MailAuth;
 
 /// <summary>One DKIM signature of an <see cref="AuthOutcome"/>.</summary>
-internal sealed record DkimInfo(string D, string Result, bool SignsFrom, bool SignsListFields);
+public sealed record DkimInfo(string D, string Result, bool SignsFrom, bool SignsListFields);
 
 /// <summary>The authentication verdict of one message.</summary>
-internal sealed class AuthOutcome
+public sealed class AuthOutcome
 {
-    public string Source = "none";       // provider_sealed | trusted_arh | local | none
-    public string Verdict = "none";      // verified | verified_forwarded | unaligned | failed | none
-    public bool Temporary;
-    public bool PendingOpen;
-    public string? VerifiedDomain;
-    public string? ViaDomain;
-    public string? Policy;               // none | quarantine | reject | absent
-    public int Ignored;
-    public string Reason = "";
-    public List<DkimInfo> Dkim = [];
+    /// <summary><c>provider_sealed</c>, <c>trusted_arh</c>, <c>local</c> or <c>none</c>.</summary>
+    public string Source { get; set; } = "none";
+    /// <summary><c>verified</c>, <c>verified_forwarded</c>, <c>unaligned</c>, <c>failed</c> or <c>none</c>.</summary>
+    public string Verdict { get; set; } = "none";
+    /// <summary>DNS trouble decided the verdict; evaluate again later.</summary>
+    public bool Temporary { get; set; }
+    /// <summary>Header-only: a valid aligned header signature (or sealed results of a listed sealer) is checked once the body is there.</summary>
+    public bool PendingOpen { get; set; }
+    public string? VerifiedDomain { get; set; }
+    public string? ViaDomain { get; set; }
+    /// <summary><c>none</c>, <c>quarantine</c>, <c>reject</c>, <c>absent</c> or null.</summary>
+    public string? Policy { get; set; }
+    /// <summary>Authentication-Results (and verdict-relevant headers) present but not trusted.</summary>
+    public int Ignored { get; set; }
+    public string Reason { get; set; } = "";
+    public List<DkimInfo> Dkim { get; set; } = [];
     /// <summary>No DKIM-Signature, local DMARC fail, no trusted results (the final verdict depends on signing history).</summary>
-    public bool UnsignedDmarcFail;
+    public bool UnsignedDmarcFail { get; set; }
     /// <summary>Local DMARC fail where every signature's key record is missing or revoked (final verdict depends on age).</summary>
-    public bool KeyGone;
+    public bool KeyGone { get; set; }
     /// <summary>An aligned DKIM pass, or a valid aligned header signature, for the From organizational domain.</summary>
-    public bool SigningEvidence;
+    public bool SigningEvidence { get; set; }
     /// <summary>The local verdict is failed because DMARC failed (not two From headers).</summary>
-    public bool DmarcFailed;
+    public bool DmarcFailed { get; set; }
     /// <summary>The provider-sealed AAR the verdict came from, if any (provider verdict methods read it).</summary>
-    public AuthenticationResults? SealedAar;
+    public AuthenticationResults? SealedAar { get; set; }
 }
 
 /// <summary>
@@ -43,7 +49,7 @@ internal sealed class AuthOutcome
 /// </list>
 /// One instance per thread; not thread-safe.
 /// </summary>
-internal sealed class AuthEvaluator
+public sealed class AuthEvaluator
 {
     public const int MaxDkimSignatures = 5;
     public const int MaxOrgCache = 4096;
@@ -382,46 +388,46 @@ internal sealed class AuthEvaluator
             o.Reason = $"{fromCount} From headers";
         }
         else switch (dm.Status)
-        {
-            case DmarcStatus.Pass:
-                o.Verdict = "verified";
-                o.Reason = $"DMARC pass, aligned d={dm.AlignedDkimResult?.Domain}";
-                break;
-            case DmarcStatus.Fail:
-                o.Verdict = "failed";
-                o.DmarcFailed = true;
-                o.Reason = $"DMARC fail (p={o.Policy})";
-                break;
-            case DmarcStatus.TempError:
-                o.Temporary = true;
-                o.Reason = "temporary DNS failure; retried at next sync";
-                break;
-            case DmarcStatus.PermError:
-                o.Reason = "DMARC permerror";
-                break;
-            default:
             {
-                var pass = forDmarc.Where(r => r.Status == DkimSignatureStatus.Pass && r.Domain != null).ToList();
-                if (author != null && pass.Any(r => Related(r.Domain!, author)))
-                {
+                case DmarcStatus.Pass:
                     o.Verdict = "verified";
-                    o.Reason = "DKIM pass aligned, no DMARC record";
-                }
-                else if (pass.Count > 0)
-                {
-                    o.Verdict = "unaligned";
-                    o.ViaDomain = TryLdh(pass[0].Domain, out var via) ? via : null;
-                    o.Reason = "DKIM pass for another domain, no DMARC record";
-                }
-                else if (forDmarc.Any(r => r.Status == DkimSignatureStatus.TempError))
-                {
+                    o.Reason = $"DMARC pass, aligned d={dm.AlignedDkimResult?.Domain}";
+                    break;
+                case DmarcStatus.Fail:
+                    o.Verdict = "failed";
+                    o.DmarcFailed = true;
+                    o.Reason = $"DMARC fail (p={o.Policy})";
+                    break;
+                case DmarcStatus.TempError:
                     o.Temporary = true;
                     o.Reason = "temporary DNS failure; retried at next sync";
-                }
-                else o.Reason = results.Count == 0 ? "unsigned, no DMARC record" : "no valid signature, no DMARC record";
-                break;
+                    break;
+                case DmarcStatus.PermError:
+                    o.Reason = "DMARC permerror";
+                    break;
+                default:
+                    {
+                        var pass = forDmarc.Where(r => r.Status == DkimSignatureStatus.Pass && r.Domain != null).ToList();
+                        if (author != null && pass.Any(r => Related(r.Domain!, author)))
+                        {
+                            o.Verdict = "verified";
+                            o.Reason = "DKIM pass aligned, no DMARC record";
+                        }
+                        else if (pass.Count > 0)
+                        {
+                            o.Verdict = "unaligned";
+                            o.ViaDomain = TryLdh(pass[0].Domain, out var via) ? via : null;
+                            o.Reason = "DKIM pass for another domain, no DMARC record";
+                        }
+                        else if (forDmarc.Any(r => r.Status == DkimSignatureStatus.TempError))
+                        {
+                            o.Temporary = true;
+                            o.Reason = "temporary DNS failure; retried at next sync";
+                        }
+                        else o.Reason = results.Count == 0 ? "unsigned, no DMARC record" : "no valid signature, no DMARC record";
+                        break;
+                    }
             }
-        }
         if (o.Verdict == "verified") o.VerifiedDomain = author;
         if (o.Verdict == "failed" && author != null && policy.ForwarderSealers.Length > 0 && SealedBy(arc, policy.ForwarderSealers) is { } s)
             Forwarded(o, msg, results, tagsList, s, author, dm, policy);

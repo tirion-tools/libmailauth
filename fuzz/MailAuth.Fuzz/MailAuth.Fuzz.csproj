@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- SharpFuzz harness for libfuzzer-dotnet (fuzz/run.sh instruments MailAuth.dll before each run). -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>MailAuth.Fuzz</AssemblyName>
+    <RootNamespace>MailAuth.Fuzz</RootNamespace>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="SharpFuzz" Version="2.3.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/MailAuth/MailAuth.csproj" />
+  </ItemGroup>
+</Project>

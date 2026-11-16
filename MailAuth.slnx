@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="src/MailAuth/MailAuth.csproj" />
+  <Project Path="tests/MailAuth.Tests/MailAuth.Tests.csproj" />
+  <Project Path="fuzz/MailAuth.Fuzz/MailAuth.Fuzz.csproj" />
+</Solution>

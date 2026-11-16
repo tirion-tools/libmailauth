@@ -4,7 +4,7 @@ using MimeKit.Cryptography;
 namespace MailAuth;
 
 /// <summary>The state of a DKIM key record as last answered (see <see cref="BrokeredDnsResolver.KeyState"/>).</summary>
-internal enum KeyRecordState { Unknown, Missing, Revoked, Present, Temp }
+public enum KeyRecordState { Unknown, Missing, Revoked, Present, Temp }
 
 /// <summary>
 /// MimeKit 5's <see cref="IDnsResolver"/> over a caller-supplied TXT transport.
@@ -15,7 +15,7 @@ internal enum KeyRecordState { Unknown, Missing, Revoked, Present, Temp }
 /// <see cref="TempTtl"/> seconds and never persisted. Key records pass <see cref="KeyValidation"/> before MimeKit
 /// sees them. One instance per thread; not thread-safe.
 /// </summary>
-internal sealed class BrokeredDnsResolver : IDnsResolver
+public sealed class BrokeredDnsResolver : IDnsResolver
 {
     // The transport limits; a reply outside them is a temporary failure.
     public const int MaxName = 253, MaxLabel = 63, MaxRecords = 16, MaxRecordBytes = 2048, MaxTotalBytes = 4096;
@@ -32,7 +32,7 @@ internal sealed class BrokeredDnsResolver : IDnsResolver
     private readonly Action<TxtCacheRow> _persist;
     private readonly Dictionary<string, Entry> _mem = new(StringComparer.Ordinal);
 
-    public KeyValidation Keys { get; } = new();
+    internal KeyValidation Keys { get; } = new();
     /// <summary>Cancellation of the current evaluation; MimeKit's own token is <c>None</c> on the synchronous paths.</summary>
     public CancellationToken Token { get; set; }
     public Func<long> Clock { get; set; } = static () => DateTimeOffset.UtcNow.ToUnixTimeSeconds();

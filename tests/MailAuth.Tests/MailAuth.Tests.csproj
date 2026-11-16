@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- MailAuth unit tests (xunit v3: the test project is an executable). -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <RootNamespace>MailAuth.Tests</RootNamespace>
+    <!-- CA1707: test names are sentences (Subject_Behaviour_Condition). -->
+    <NoWarn>$(NoWarn);CA1707</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="xunit.v3" Version="3.2.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/MailAuth/MailAuth.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="../fixtures/**/*" LinkBase="fixtures" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

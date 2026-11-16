@@ -1,7 +1,7 @@
 namespace MailAuth;
 
 /// <summary>A sealer-signer pairing: <c>exact</c> (organizational domain equals Signer) or <c>tenant</c>.</summary>
-internal sealed record SignerEntry(string Signer, bool Tenant);
+public sealed record SignerEntry(string Signer, bool Tenant);
 
 /// <summary>
 /// The trust inputs of one account for <see cref="AuthEvaluator"/>.
@@ -14,7 +14,7 @@ internal sealed record SignerEntry(string Signer, bool Tenant);
 /// <item><see cref="Verdicts"/>: which provider verdict fields are read and how they are bound; null reads none.</item>
 /// </list>
 /// </summary>
-internal sealed record AuthPolicy(string? AuthservId, string[] ProviderSealers, string[] ForwarderSealers,
+public sealed record AuthPolicy(string? AuthservId, string[] ProviderSealers, string[] ForwarderSealers,
     IReadOnlyDictionary<string, SignerEntry[]> SealerSigners, VerdictConfig? Verdicts)
 {
     /// <summary>An authserv-id or host against an exact name or a <c>*.suffix</c> pattern.</summary>

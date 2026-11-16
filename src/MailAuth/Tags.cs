@@ -1,7 +1,7 @@
 namespace MailAuth;
 
 /// <summary>RFC 6376 §3.2 tag lists (DKIM-Signature, ARC-Seal, DKIM key and DMARC records), whitespace removed from values.</summary>
-internal static class Tags
+public static class Tags
 {
     /// <summary>Tags beyond this count are ignored (a real record has fewer than 20).</summary>
     public const int MaxTags = 64;

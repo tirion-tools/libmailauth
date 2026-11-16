@@ -6,7 +6,7 @@ namespace MailAuth;
 /// The shipped ARC sealer to DKIM signer list (<c>Data/sealer-signers.json</c>, embedded as
 /// <see cref="ResourceName"/>), keyed by sealer organizational domain; see <see cref="AuthPolicy.SealerSigners"/>.
 /// </summary>
-internal static class SealerSigners
+public static class SealerSigners
 {
     public const string ResourceName = "MailAuth.Data.sealer-signers.json";
 

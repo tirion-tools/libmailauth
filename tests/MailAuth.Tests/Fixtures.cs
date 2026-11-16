@@ -1,16 +1,14 @@
 using System.Formats.Tar;
 using System.IO.Compression;
 using System.Text.Json;
-using MailAuth;
-
 namespace MailAuth.Tests;
 
 /// <summary>
 /// The synthetic authentication fixtures dkim-aot, arc-sealer-dkim and provider-verdicts
 /// (each with its own keys and DNS zone) and their recorded expected results, in
-/// tests/fixtures/&lt;set&gt;/{fixtures.tar.gz, zone.json, expected.json}.
+/// tests/fixtures/&lt;set&gt;/{fixtures.tar.gz, zone.json, expected.json} (copied next to the test assembly).
 /// </summary>
-internal sealed class SignalsFixtureSet
+internal sealed class FixtureSet
 {
     public string Name { get; }
     public Dictionary<string, byte[]> Fixtures { get; } = new(StringComparer.Ordinal);
@@ -18,20 +16,20 @@ internal sealed class SignalsFixtureSet
     public JsonElement Zone { get; }
     public JsonElement Expected { get; }
 
-    private static readonly Dictionary<string, SignalsFixtureSet> Cache = new(StringComparer.Ordinal);
+    private static readonly Dictionary<string, FixtureSet> Cache = new(StringComparer.Ordinal);
 
-    public static string Root() => Repo.Path("mail", "Tests", "Fixtures", "signals");
+    public static string Root() => Path.Combine(AppContext.BaseDirectory, "fixtures");
 
-    public static SignalsFixtureSet Load(string name)
+    public static FixtureSet Load(string name)
     {
         lock (Cache)
         {
-            if (!Cache.TryGetValue(name, out var set)) Cache[name] = set = new SignalsFixtureSet(name);
+            if (!Cache.TryGetValue(name, out var set)) Cache[name] = set = new FixtureSet(name);
             return set;
         }
     }
 
-    private SignalsFixtureSet(string name)
+    private FixtureSet(string name)
     {
         Name = name;
         string dir = Path.Combine(Root(), name);

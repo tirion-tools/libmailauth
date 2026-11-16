@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- MailAuth: a receiving client's mail authentication policy over MimeKit 5's DKIM, ARC and DMARC verifiers. -->
+  <PropertyGroup>
+    <AssemblyName>MailAuth</AssemblyName>
+    <RootNamespace>MailAuth</RootNamespace>
+    <Version>0.1.0</Version>
+    <IsAotCompatible>true</IsAotCompatible>
+    <IsTrimmable>true</IsTrimmable>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- DkimVerifier, ArcVerifier, DmarcVerifier and IDnsResolver; BouncyCastle.Cryptography 2.7.0 comes with it. -->
+    <PackageReference Include="MimeKit.Cryptography" Version="5.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Data/sealer-signers.json" LogicalName="MailAuth.Data.sealer-signers.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="MailAuth.Tests" />
+    <InternalsVisibleTo Include="MailAuth.Fuzz" />
+  </ItemGroup>
+</Project>

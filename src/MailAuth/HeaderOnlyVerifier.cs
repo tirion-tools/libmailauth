@@ -28,9 +28,9 @@ internal sealed class HeaderOnlyVerifier(BrokeredDnsResolver dns, DmarcVerifier 
     public sealed record Result(string Verdict, string Reason, string? Policy, bool Temporary, List<DkimInfo> Dkim);
 
     /// <summary>One header field: lower-case name and its raw text (Latin-1, CRLF line ends, terminator included).</summary>
-    private readonly record struct Field(string Name, string Raw);
+    internal readonly record struct Field(string Name, string Raw);
 
-    private static List<Field> Fields(ReadOnlySpan<byte> header)
+    internal static List<Field> Fields(ReadOnlySpan<byte> header)
     {
         var text = Encoding.Latin1.GetString(header).Replace("\r\n", "\n", StringComparison.Ordinal).Replace("\n", "\r\n", StringComparison.Ordinal);
         var fields = new List<Field>();
@@ -53,7 +53,7 @@ internal sealed class HeaderOnlyVerifier(BrokeredDnsResolver dns, DmarcVerifier 
     }
 
     /// <summary>RFC 6376 §3.4.1 simple / §3.4.2 relaxed header canonicalization of one field.</summary>
-    private static string Canon(string raw, bool relaxed)
+    internal static string Canon(string raw, bool relaxed)
     {
         if (!relaxed) return raw;
         int c = raw.IndexOf(':', StringComparison.Ordinal);
@@ -71,7 +71,7 @@ internal sealed class HeaderOnlyVerifier(BrokeredDnsResolver dns, DmarcVerifier 
     }
 
     /// <summary>The DKIM-Signature field with the value of its b= tag removed (RFC 6376 §3.7), raw otherwise.</summary>
-    private static string WithoutB(string raw)
+    internal static string WithoutB(string raw)
     {
         int c = raw.IndexOf(':', StringComparison.Ordinal) + 1;
         int pos = c;
@@ -152,7 +152,10 @@ internal sealed class HeaderOnlyVerifier(BrokeredDnsResolver dns, DmarcVerifier 
         var dm = dmarc.Verify(msg, results, null!);
         string? policy = dm.Status == DmarcStatus.None ? "absent" : dm.Policy?.ToString().ToLowerInvariant() switch
         {
-            "none" => "none", "quarantine" => "quarantine", "reject" => "reject", _ => null,
+            "none" => "none",
+            "quarantine" => "quarantine",
+            "reject" => "reject",
+            _ => null,
         };
         bool anyPass = results.Any(r => r.Status == DkimSignatureStatus.Pass);
         return dm.Status switch

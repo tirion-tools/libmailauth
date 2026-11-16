@@ -52,13 +52,16 @@ internal sealed class AuthEvaluator
     private readonly DmarcVerifier _dmarc;
     private readonly HeaderOnlyVerifier _headerOnly;
     private readonly BrokeredDnsResolver _dns;
-    private readonly Psl _psl;
+    private readonly Func<string, string?> _registrable;
     private readonly Dictionary<string, string> _orgDomains = new(StringComparer.Ordinal);
 
-    public AuthEvaluator(BrokeredDnsResolver dns, Psl psl)
+    /// <param name="dns">The resolver every verifier and the header-only check use.</param>
+    /// <param name="registrableDomain">The registrable domain (eTLD+1, Public Suffix List) of a lower-case host, or null
+    /// for a public suffix; used without DNS lookups for the history and DNS-trouble organization checks.</param>
+    public AuthEvaluator(BrokeredDnsResolver dns, Func<string, string?> registrableDomain)
     {
         _dns = dns;
-        _psl = psl;
+        _registrable = registrableDomain;
         _dkim = new DkimVerifier(dns) { MaxSignatures = MaxDkimSignatures, MinimumRsaKeyLength = 1024 };
         _arc = new ArcVerifier(dns);
         _dmarc = new DmarcVerifier(dns, _dkim) { MaxDkimSignatures = MaxDkimSignatures };
@@ -250,11 +253,11 @@ internal sealed class AuthEvaluator
     /// <summary>Same organization for the history rules: equal domains or equal registrable domains (PSL).</summary>
     private bool SameOrg(string d, string? author) =>
         author != null && (string.Equals(d, author, StringComparison.OrdinalIgnoreCase)
-                           || (_psl.Registrable(d.ToLowerInvariant().TrimEnd('.')) is { } a && a == _psl.Registrable(author)));
+                           || (_registrable(d.ToLowerInvariant().TrimEnd('.')) is { } a && a == _registrable(author)));
 
     /// <summary>
-    /// The flags the caller's signing-history rules need: unsigned
-    /// local DMARC failure, signed with every key gone, and signing evidence for the From organization.
+    /// The flags the caller's signing-history rules need: unsigned local DMARC failure,
+    /// signed with every key gone, and signing evidence for the From organization.
     /// </summary>
     private AuthOutcome History(MimeMessage msg, AuthOutcome o)
     {
@@ -338,7 +341,7 @@ internal sealed class AuthEvaluator
 
     /// <summary>For DNS-trouble decisions only: same registrable domain (PSL), no lookups needed.</summary>
     private bool SameOrganization(string d, string? author) =>
-        author != null && (Related(d, author) || (_psl.Registrable(d) is { } a && a == _psl.Registrable(author)));
+        author != null && (Related(d, author) || (_registrable(d) is { } a && a == _registrable(author)));
 
     private void LocalVerify(AuthOutcome o, MimeMessage msg, ReadOnlySpan<byte> raw, string? author, int fromCount, AuthPolicy policy, ArcInfo? arc)
     {

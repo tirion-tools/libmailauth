@@ -2,7 +2,6 @@ using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 using MimeKit;
-using MimeKit.Cryptography;
 
 namespace MailAuth;
 
@@ -21,6 +20,26 @@ internal enum VerdictForm
     Firewalled = 4,
 }
 
+/// <summary>What bound the verdict fields: the server's Authentication-Results, its Received, or nothing.</summary>
+internal enum VerdictAnchor { None, Arh, Received }
+
+/// <summary>Instances of verdict fields that were not read, by reason.</summary>
+internal sealed class IgnoredCounts
+{
+    /// <summary>Below the server's anchor Authentication-Results (another hop wrote them).</summary>
+    public uint BelowAnchor { get; set; }
+    /// <summary>A prepended field with no anchor Authentication-Results on the message.</summary>
+    public uint NoAnchor { get; set; }
+    /// <summary>Not bound to the server (wrong position, queue id or block).</summary>
+    public uint Unbound { get; set; }
+    /// <summary>A firewalled field present more than once.</summary>
+    public uint Duplicate { get; set; }
+    /// <summary>Outside the field's grammar or limits.</summary>
+    public uint Unparsable { get; set; }
+    /// <summary>A renamed copy from another tenant, or the report of another hop.</summary>
+    public uint UntrustedCopy { get; set; }
+}
+
 /// <summary>
 /// Per-account provider-verdict configuration: the server's authserv-id and Received host patterns, the form of each
 /// field it writes, the bind field, and whether methods are read from the provider-sealed AAR or the anchor ARH.
@@ -37,8 +56,8 @@ internal sealed record VerdictConfig(string[] Authserv, string[] ServerHosts, IR
     /// both measured accounts): the SpamAssassin/amavis fields in the prepended form and
     /// the rspamd fields appended and bound by <c>X-Rspamd-Queue-Id</c>; methods from the anchor ARH. Each form is a
     /// binding a sender cannot forge, and verdicts only escalate, so a field is read in whichever of its forms holds
-    /// on the message. The ≥ 90 % per-account form detection needs the account's history, which is not an input of
-    /// the evaluation; the Microsoft 365 firewalled forms are not defaults.
+    /// on the message. Per-account form detection needs the account's history, which is not an input here; the
+    /// Microsoft 365 firewalled forms are not defaults.
     /// </summary>
     public static VerdictConfig ForStampingServer(string authservId) => new(
         [authservId], [authservId],
@@ -62,17 +81,15 @@ internal sealed record VerdictConfig(string[] Authserv, string[] ServerHosts, IR
 }
 
 /// <summary>
-/// Strict, bounded extraction of provider spam/phishing verdicts bound to the account's receiving server
-/// into a provider record.
-/// Any limit violation makes that field unparsable; nothing is guessed. Verdicts only escalate.
+/// Strict, bounded binding of provider spam/phishing verdict fields to the account's receiving server
+/// and the grammars of those fields.
+/// Any limit violation makes that field unparsable; nothing is guessed.
 /// </summary>
 internal static partial class ProviderVerdicts
 {
     public const int MaxHeaderFields = 1000;
     public const int MaxFieldBytes = 8192;
     public const int MaxTests = 256;
-    public const int MaxRules = 8;
-    public const int MaxMethods = 4;
     public const int MaxPairs = 64;
 
     public sealed record Field(int Index, string Name, string Value);
@@ -131,20 +148,22 @@ internal static partial class ProviderVerdicts
         return (-1, null);
     }
 
-    private sealed class Bound
+    /// <summary>The verdict fields bound to the account's server, the anchor that bound them and what was not read.</summary>
+    public sealed class BoundVerdicts
     {
-        public readonly Dictionary<string, (Field F, VerdictForm Form)> Fields = new(StringComparer.Ordinal);
-        public readonly Ignored Ignored = new();
-        public Provider.Types.Anchor Anchor = Provider.Types.Anchor.None;
+        public Dictionary<string, (Field F, VerdictForm Form)> Fields { get; } = new(StringComparer.Ordinal);
+        public IgnoredCounts Ignored { get; } = new();
+        public VerdictAnchor Anchor { get; set; } = VerdictAnchor.None;
     }
 
-    private static Bound Bind(List<Field> f, VerdictConfig cfg)
+    /// <summary>Binds every known verdict field of <paramref name="f"/> to the server of <paramref name="cfg"/> by its form.</summary>
+    public static BoundVerdicts Bind(List<Field> f, VerdictConfig cfg)
     {
-        var b = new Bound();
+        var b = new BoundVerdicts();
         int arh = AnchorArh(f, cfg);
         var (rcv, qid) = AnchorReceived(f, cfg);
-        if (arh >= 0) b.Anchor = Provider.Types.Anchor.Arh;
-        else if (rcv >= 0) b.Anchor = Provider.Types.Anchor.Received;
+        if (arh >= 0) b.Anchor = VerdictAnchor.Arh;
+        else if (rcv >= 0) b.Anchor = VerdictAnchor.Received;
         var bind = f.LastOrDefault(x => x.Name == cfg.BindField);
         foreach (var name in VerdictConfig.KnownFields)
         {
@@ -233,16 +252,8 @@ internal static partial class ProviderVerdicts
     [GeneratedRegex("^[A-Za-z]{1,12}$", RegexOptions.CultureInvariant)]
     private static partial Regex PairKeyRx();
 
-    [GeneratedRegex("^[a-z0-9-]{1,32}$", RegexOptions.CultureInvariant)]
-    private static partial Regex TokenRx();
-
-    [GeneratedRegex(@"^\d{3}$", RegexOptions.CultureInvariant)]
-    private static partial Regex ReasonRx();
-
-    [GeneratedRegex(@"^[A-Za-z0-9.-]{1,253}$", RegexOptions.CultureInvariant)]
-    private static partial Regex ZoneRx();
-
-    private static int? Centi(string s) =>
+    /// <summary>A score such as <c>-1.5</c> or <c>11.70</c> in hundredths, or null outside the grammar.</summary>
+    public static int? Centi(string s) =>
         Num().IsMatch(s) ? (int)Math.Round(double.Parse(s, CultureInfo.InvariantCulture) * 100) : null;
 
     public sealed record Status(bool Spam, int? Score, int? Required, List<string> Tests);
@@ -344,206 +355,5 @@ internal static partial class ProviderVerdicts
             if (!d.TryAdd(k.ToUpperInvariant(), part[(c + 1)..].Trim())) return null;
         }
         return d;
-    }
-
-    private static readonly string[] SfvValues = ["NSPM", "SPM", "SKS", "SKA", "SKB", "SKI", "SKQ", "SKN", "BLK", "SFE", "SKU", "SKV"];
-    private static readonly string[] CatValues = ["NONE", "BULK", "DIMP", "GIMP", "HPHSH", "HPHISH", "HSPM", "INTOS", "MALW", "OSPM", "PHSH", "SAP", "SPM", "SPOOF", "UIMP", "AMP", "FTBP"];
-
-    private static int? Scl(string s) =>
-        s.Length <= 2 && int.TryParse(s, NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out int x) && x >= -1 && x <= 9 ? x : null;
-
-    private static uint FormBit(VerdictForm f) => f switch
-    {
-        VerdictForm.Prepended => 1,
-        VerdictForm.AppendedBound => 2,
-        VerdictForm.Firewalled => 4,
-        _ => 0,
-    };
-
-    private const uint FormAar = 8, FormArh = 16;
-
-    /// <summary>
-    /// The provider record. <paramref name="sealedAar"/> is the provider-sealed AAR the auth verdict came from, or null.
-    /// No configuration: form none, spam unknown.
-    /// </summary>
-    public static Provider Extract(List<Field>? f, VerdictConfig? cfg, AuthenticationResults? sealedAar, IReadOnlySet<string> phishRules, IReadOnlySet<string> malwareRules)
-    {
-        var o = new Provider { Spam = Provider.Types.Spam.Unknown, Anchor = Provider.Types.Anchor.None };
-        if (cfg == null) return o;
-        if (f == null) { o.Error = "header over field limit"; return o; }
-        var b = Bind(f, cfg);
-        o.Anchor = b.Anchor;
-        o.Ignored = b.Ignored;
-        uint forms = 0;
-        var engines = new SortedSet<string>(StringComparer.Ordinal);
-        var rules = new SortedSet<string>(StringComparer.Ordinal);
-        bool? spam = null;
-        bool phish = false, malware = false, high = false, bulk = false;
-        int? score = null, required = null, scl = null;
-        void Says(bool s) => spam = spam == true || s;
-        void TestsToFlags(List<string> tests)
-        {
-            foreach (var t in tests)
-            {
-                if (phishRules.Contains(t)) { phish = true; if (rules.Count < MaxRules) rules.Add(t); }
-                if (malwareRules.Contains(t)) { malware = true; if (rules.Count < MaxRules) rules.Add(t); }
-            }
-        }
-
-        if (b.Fields.TryGetValue("x-spam-status", out var xs))
-        {
-            var st = ParseSpamStatus(xs.F.Value);
-            if (st == null) b.Ignored.Unparsable++;
-            else
-            {
-                forms |= FormBit(xs.Form);
-                engines.Add(xs.F.Value.Contains("tagged_above=", StringComparison.Ordinal) ? "amavis" : st.Tests.Count > 0 || st.Required != null ? "spamassassin" : "rspamd");
-                Says(st.Spam);
-                score = st.Score ?? score;
-                required = st.Required ?? required;
-                if (st.Spam && st.Score != null && st.Required is int r && r > 0 && st.Score >= 2 * r) high = true;
-                TestsToFlags(st.Tests);
-            }
-        }
-        foreach (var name in (string[])["x-spam-flag", "x-spam"])
-        {
-            if (!b.Fields.TryGetValue(name, out var xf)) continue;
-            string v = xf.F.Value.Trim();
-            if (v.Equals("YES", StringComparison.OrdinalIgnoreCase)) { Says(true); forms |= FormBit(xf.Form); }
-            else if (v.Equals("NO", StringComparison.OrdinalIgnoreCase)) { Says(false); forms |= FormBit(xf.Form); }
-            else b.Ignored.Unparsable++;
-        }
-        if (b.Fields.TryGetValue("x-spam-score", out var xss))
-        {
-            var c = Centi(xss.F.Value.Trim());
-            if (c == null) b.Ignored.Unparsable++;
-            else { score ??= c; forms |= FormBit(xss.Form); }
-        }
-        if (b.Fields.TryGetValue("x-spamd-result", out var xr))
-        {
-            var st = ParseSpamdResult(xr.F.Value);
-            if (st == null) b.Ignored.Unparsable++;
-            else
-            {
-                forms |= FormBit(xr.Form);
-                engines.Add("rspamd");
-                Says(st.Spam || (st.Score is int s && st.Required is int r && s >= r));
-                score ??= st.Score;
-                required ??= st.Required;
-                TestsToFlags(st.Tests);
-            }
-        }
-        if (b.Fields.TryGetValue("x-rspamd-action", out var xa))
-        {
-            string v = xa.F.Value.Trim().ToLowerInvariant();
-            if (v is "no action" or "greylist") { Says(false); forms |= FormBit(xa.Form); }
-            else if (v is "add header" or "rewrite subject" or "soft reject") { Says(true); forms |= FormBit(xa.Form); }
-            else if (v == "reject") { Says(true); high = true; forms |= FormBit(xa.Form); }
-            else b.Ignored.Unparsable++;
-            if (v.Length <= 16) o.Action = v;
-        }
-        if (b.Fields.TryGetValue("x-ms-exchange-organization-scl", out var xscl))
-        {
-            var s = Scl(xscl.F.Value.Trim());
-            if (s == null) b.Ignored.Unparsable++;
-            else
-            {
-                forms |= FormBit(xscl.Form);
-                engines.Add("eop");
-                scl = s;
-                Says(s >= 5);
-                if (s >= 9) high = true;
-            }
-        }
-        if (b.Fields.TryGetValue("x-forefront-antispam-report", out var xfr))
-        {
-            var p = ParsePairs(xfr.F.Value);
-            string? dir = p?.GetValueOrDefault("DIR");
-            int? s = p != null && p.TryGetValue("SCL", out var sv) ? Scl(sv) : null;
-            string? sfv = p?.GetValueOrDefault("SFV"), cat = p?.GetValueOrDefault("CAT");
-            if (p == null || (p.ContainsKey("SCL") && s == null) || (sfv != null && !SfvValues.Contains(sfv)) || (cat != null && !CatValues.Contains(cat)))
-                b.Ignored.Unparsable++;
-            else if (dir != "INB") b.Ignored.UntrustedCopy++;   // outbound or internal report of another hop
-            else
-            {
-                forms |= FormBit(xfr.Form);
-                engines.Add("eop");
-                if (s != null) { scl ??= s; if (s >= 5) Says(true); else if (sfv is "NSPM") Says(false); if (s >= 9) high = true; }
-                if (sfv != null) o.Sfv = sfv;
-                if (cat != null) o.Cat = cat;
-                if (sfv is "SPM" or "SKS" or "SKB" or "BLK") Says(true);
-                if (cat is "PHSH" or "HPHSH" or "HPHISH") { phish = true; Says(true); }
-                if (cat is "HPHSH" or "HPHISH" or "HSPM") high = true;
-                if (cat == "MALW") { malware = true; Says(true); }
-                if (cat == "BULK") bulk = true;
-            }
-        }
-        if (b.Fields.TryGetValue("x-microsoft-antispam", out var xma))
-        {
-            var p = ParsePairs(xma.F.Value);
-            if (p == null) b.Ignored.Unparsable++;
-            else if (p.TryGetValue("BCL", out var bv))
-            {
-                if (bv.Length == 1 && bv[0] is >= '0' and <= '9')
-                {
-                    o.Bcl = bv[0] - '0';
-                    forms |= FormBit(xma.Form);
-                    if (o.Bcl >= 7) bulk = true;
-                }
-                else b.Ignored.Unparsable++;
-            }
-        }
-
-        // Methods inside the trusted results: the provider-sealed AAR, or the anchor ARH of a stamping server.
-        AuthenticationResults? ar = null;
-        uint arForm = 0;
-        if (cfg.AarMethods && sealedAar != null) { ar = sealedAar; arForm = FormAar; }
-        else if (cfg.ArhMethods)
-        {
-            int idx = AnchorArh(f, cfg);
-            if (idx >= 0 && AuthenticationResults.TryParse(Encoding.Latin1.GetBytes(f[idx].Value), out var parsed)) { ar = parsed; arForm = FormArh; }
-        }
-        if (ar != null)
-        {
-            foreach (var m in ar.Results)
-            {
-                string meth = (m.Method ?? "").ToLowerInvariant(), res = (m.Result ?? "").ToLowerInvariant();
-                if (meth is "spf" or "dkim" or "dmarc" or "arc" or "auth" or "" || o.Methods.Count >= MaxMethods) continue;
-                if (!TokenRx().IsMatch(meth) || !TokenRx().IsMatch(res)) { b.Ignored.Unparsable++; continue; }
-                var e = new Method { Method_ = meth, Result = res };
-                if (meth == "compauth")
-                {
-                    string reason = m.Reason ?? "";
-                    o.Compauth = new CompAuth { Result = res, Reason = ReasonRx().IsMatch(reason) ? reason : "" };
-                }
-                else
-                {
-                    var zone = m.Properties.FirstOrDefault(p => string.Equals(p.Property, "zone", StringComparison.OrdinalIgnoreCase))?.Value;
-                    if (zone != null && ZoneRx().IsMatch(zone) && zone.Length <= 64) e.Zone = zone.ToLowerInvariant();
-                }
-                o.Methods.Add(e);
-            }
-            if (o.Methods.Count > 0) forms |= arForm;
-        }
-
-        o.Form = forms;
-        o.Engine = engines.FirstOrDefault() switch
-        {
-            "amavis" => Provider.Types.Engine.Amavis,
-            "eop" => Provider.Types.Engine.Eop,
-            "rspamd" => Provider.Types.Engine.Rspamd,
-            "spamassassin" => Provider.Types.Engine.Spamassassin,
-            _ => Provider.Types.Engine.Unspecified,
-        };
-        o.Spam = spam == null ? Provider.Types.Spam.Unknown : spam == true ? Provider.Types.Spam.Yes : Provider.Types.Spam.No;
-        o.Phish = phish;
-        o.Malware = malware;
-        o.High = high;
-        o.Bulk = bulk;
-        if (score is int sc) o.ScoreCenti = sc;
-        if (required is int rq) o.RequiredCenti = rq;
-        if (scl is int sl) o.Scl = sl;
-        o.Rules.AddRange(rules);
-        return o;
     }
 }

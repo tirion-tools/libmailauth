@@ -172,6 +172,11 @@ FUZZ_SECONDS=600 tools/container.sh tools/gate.sh fuzz
 Consumers build the library from source through a project reference to `src/MailAuth/MailAuth.csproj` and pin a
 commit; pass `ArtifactsPath` to keep its build output out of the checkout.
 
+## Contributing
+
+This repository is not accepting contributions at this time: issues and pull requests are not accepted. Report
+security vulnerabilities privately as described in [`SECURITY.md`](SECURITY.md).
+
 ## Licence
 
-MIT, see `LICENSE`.
+MIT, see `LICENSE`. Third-party material: `THIRD-PARTY-NOTICES.md`.

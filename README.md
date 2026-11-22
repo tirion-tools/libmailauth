@@ -29,6 +29,7 @@ removed here once released upstream):
 | MimeKit 4: DKIM key status | missing / revoked / present key state on the result | `BrokeredDnsResolver.KeyState` reads the cached raw answer |
 | MimeKit 5: ARC instance data | sealer domain and AAR per instance on `ArcValidationResult` | `AuthEvaluator` re-parses ARC-Seal `i=`/`d=` with `Tags` |
 | MimeKit 6: DKIM key cache | a validated-key cache instead of rebuilding the key per signature | `KeyValidation` (below) |
+| MimeKit 7: DKIM verification time | a verification time for `x=` (the delivery time) instead of the current clock | `DeliveryTimeDkim`: a signature MimeKit refused only as expired, whose `x=` is not before the delivery time, is checked without the clock (key, `b=` with `HeaderOnlyVerifier.Check`, `bh=` with MimeKit's `VerifyBodyHash`) |
 | bc-csharp 6: RSA modulus validation cache | validate each modulus once (`m_validated`) | `KeyValidation`: each key record validated once with the full default checks, then MimeKit runs under a thread-scoped `RsaMaxMRTests=0` |
 
 What it adds is the receiving client's policy layer, which MimeKit leaves to the application:
@@ -40,9 +41,10 @@ What it adds is the receiving client's policy layer, which MimeKit leaves to the
   (`Data/sealer-signers.json`);
 - stricter local rules: `l=` must cover the body, RSA under 1,024 bits and rsa-sha1 do not count, at most 5
   signatures, two From headers fail, DNS errors from another organization cannot turn a failure into a temporary
-  result;
+  result; a signature's `x=` expiry is judged at the delivery time the caller gives, not at verification time;
 - header-only DKIM for messages whose body is not downloaded yet;
-- flags for the caller's history rules (no signature from a domain that usually signs, every key gone);
+- flags for the caller's history rules (no signature from a domain that usually signs, every key of the From
+  organization's signatures gone);
 - binding of SpamAssassin, amavis, rspamd and Exchange Online verdict headers to the receiving server by
   Authentication-Results position and queue id, and bounded grammars for those fields;
 - an `IDnsResolver` over a caller-supplied TXT transport, with bounded answers, a persisted cache and no network
@@ -85,8 +87,8 @@ var policy = new AuthPolicy(
     Verdicts: VerdictConfig.ForStampingServer("mx.example.net"));   // or null: read no provider verdicts
 
 dns.Token = cancellationToken;              // MimeKit's synchronous verifiers pass no token
-AuthOutcome o = evaluator.Evaluate(message, rawMessage, policy);                    // whole message
-AuthOutcome h = evaluator.EvaluateHeaderOnly(message, headerBlock, rfc822Size, policy);   // header block only
+AuthOutcome o = evaluator.Evaluate(message, rawMessage, policy, deliveredAt);                    // whole message
+AuthOutcome h = evaluator.EvaluateHeaderOnly(message, headerBlock, rfc822Size, policy, deliveredAt);   // header block only
 // o.Source: provider_sealed | trusted_arh | local | none
 // o.Verdict: verified | verified_forwarded | unaligned | failed | none; o.Temporary; o.PendingOpen
 // o.VerifiedDomain, o.ViaDomain, o.Policy, o.Dkim (DkimInfo per signature), o.Ignored, o.Reason
@@ -100,9 +102,17 @@ var status = ProviderVerdicts.ParseSpamStatus(value);          // also ParseSpam
 
 - **Strings, not enums,** for `Source`, `Verdict`, `Policy` and `DkimInfo.Result`: they are the values of the
   Authentication-Results registry and of the verdict model above, and callers store them.
+- **Delivery time.** `deliveredAt` (Unix seconds, for IMAP the INTERNALDATE) is when the receiving server accepted the
+  message. A DKIM signature's `x=` is judged at that time: email service providers commonly sign with `x=` two hours
+  after `t=`, so a message first verified later (a first sync of an existing mailbox) would otherwise fail DMARC under
+  the sender's own policy although it verified on delivery. A signature already expired at delivery does not count.
+  Without a delivery time, full verification judges `x=` now (MimeKit) and header-only verification leaves it to the
+  check at open.
 - **History rules are the caller's.** `UnsignedDmarcFail` (no signature, local DMARC fail) and `KeyGone` (DMARC fail,
-  every key missing or revoked) mark a `failed` verdict the caller may soften: for example to `none` when the From
-  organization has no signing history before the message, or when the message was old at its first sync.
+  and every signature of the From organization, or every signature when none is the From organization's, has a key
+  that is missing or revoked; an unaligned signature, valid or not, does not matter because a sender could leave it
+  out) mark a `failed` verdict the caller may soften: for example to `none` when the From organization has no signing
+  history before the message, or when the message was old at its first sync.
   `SigningEvidence` marks a message that is evidence of signing for the From organization.
 - **`ITxtTransport.Ask`** answers a TXT name with `Ok`, `NoData`, `NxDomain`, `Temp` or `Refused`, synchronously.
   The resolver asks only `<selector>._domainkey.<domain>` and `_dmarc.<domain>` names, never a special-use top label;
@@ -145,6 +155,10 @@ var status = ProviderVerdicts.ParseSpamStatus(value);          // also ParseSpam
   header-only verdicts (106 + 106), provider-verdict binding (anchor and binding counts), forged and misplaced
   Authentication-Results, two From headers, `l=`, a prime-modulus key, an attacker-sealed ARC chain, SERVFAIL on the
   key, key-gone and signing-evidence flags, a bad selector, mutated messages, and the cache rules across a restart.
+- `DeliveryTimeTests`: messages signed in the test with an ESP-style `x=` two hours after `t=`, thirty days ago:
+  valid at delivery verifies, judged now fails (MimeKit's clock), expired at delivery and a changed body fail, key
+  server trouble is temporary, a revoked key is gone; header-only judges `x=` at delivery; the key-gone flag ignores
+  a valid unaligned signature.
 - `ParserTests`: the resolver's reply mapping, name policy, persisted rows and key state; the tag-list parser; the
   header-only field split and canonicalization; the verdict grammars; the shipped sealer-signer list.
 - `fuzz/` is a SharpFuzz harness with three targets: `tags` (the tag-list parser), `headeronly` (the header-only

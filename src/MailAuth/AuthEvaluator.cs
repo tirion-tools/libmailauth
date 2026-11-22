@@ -107,16 +107,19 @@ public sealed class AuthEvaluator
         _ => null,
     };
 
+    /// <summary>Bytes of the header block of <paramref name="raw"/>, including the empty line that ends it.</summary>
+    internal static int HeaderLength(ReadOnlySpan<byte> raw)
+    {
+        int end = raw.IndexOf("\r\n\r\n"u8);
+        if (end >= 0) return end + 4;
+        end = raw.IndexOf("\n\n"u8);
+        return end >= 0 ? end + 2 : raw.Length;
+    }
+
     /// <summary>Canonicalized body length (RFC 6376 §3.4.3 simple, §3.4.4 relaxed); MimeKit's filters are internal.</summary>
     internal static long CanonicalBodyLength(ReadOnlySpan<byte> raw, bool relaxed)
     {
-        int start = raw.IndexOf("\r\n\r\n"u8);
-        if (start >= 0) start += 4;
-        else
-        {
-            start = raw.IndexOf("\n\n"u8);
-            start = start >= 0 ? start + 2 : raw.Length;
-        }
+        int start = HeaderLength(raw);
         long total = 0, pendingEmpty = 0;
         int pos = start;
         while (pos < raw.Length)
@@ -254,7 +257,10 @@ public sealed class AuthEvaluator
     }
 
     /// <summary>Full verification: <paramref name="raw"/> is the whole message.</summary>
-    public AuthOutcome Evaluate(MimeMessage msg, ReadOnlySpan<byte> raw, AuthPolicy policy) => History(msg, EvaluateCore(msg, raw, policy));
+    /// <param name="deliveredAt">When the receiving server delivered the message (IMAP INTERNALDATE), Unix seconds; a DKIM
+    /// signature's <c>x=</c> is judged at that time (<see cref="DeliveryTimeDkim"/>). Null judges it now.</param>
+    public AuthOutcome Evaluate(MimeMessage msg, ReadOnlySpan<byte> raw, AuthPolicy policy, long? deliveredAt = null) =>
+        History(msg, EvaluateCore(msg, raw, policy, deliveredAt));
 
     /// <summary>Same organization for the history rules: equal domains or equal registrable domains (PSL).</summary>
     private bool SameOrg(string d, string? author) =>
@@ -277,17 +283,17 @@ public sealed class AuthEvaluator
             o.UnsignedDmarcFail = true;
             return o;
         }
-        if (o.Dkim.Any(k => k.Result == "pass")) return o;   // a valid but unaligned signature stays failed
-        o.KeyGone = sigs.Take(MaxDkimSignatures).All(h =>
-        {
-            var t = Tags.Parse(h.Value);
-            return TryLdh(t.GetValueOrDefault("d"), out var d) && TryLdh(t.GetValueOrDefault("s"), out var sel)
-                   && _dns.KeyState(sel + "._domainkey." + d) is KeyRecordState.Missing or KeyRecordState.Revoked;
-        });
+        // The signatures that could have let DMARC pass are the From organization's; an unaligned signature, valid or
+        // not, neither helps nor hurts (a sender could leave it out). Without any, every signature counts.
+        var counted = sigs.Take(MaxDkimSignatures).Select(h => Tags.Parse(h.Value)).ToList();
+        var own = counted.Where(t => TryLdh(t.GetValueOrDefault("d"), out var d) && SameOrg(d, author)).ToList();
+        o.KeyGone = (own.Count > 0 ? own : counted).All(t =>
+            TryLdh(t.GetValueOrDefault("d"), out var d) && TryLdh(t.GetValueOrDefault("s"), out var sel)
+            && _dns.KeyState(sel + "._domainkey." + d) is KeyRecordState.Missing or KeyRecordState.Revoked);
         return o;
     }
 
-    private AuthOutcome EvaluateCore(MimeMessage msg, ReadOnlySpan<byte> raw, AuthPolicy policy)
+    private AuthOutcome EvaluateCore(MimeMessage msg, ReadOnlySpan<byte> raw, AuthPolicy policy, long? deliveredAt)
     {
         var o = new AuthOutcome();
         int fromCount = msg.Headers.Count(h => h.Id == HeaderId.From);
@@ -314,7 +320,7 @@ public sealed class AuthEvaluator
             FillFromResults(o, designArh, FromResults(designArh, author, fromCount, sealedResults: false), author);
             return o;
         }
-        LocalVerify(o, msg, raw, author, fromCount, policy, arc);
+        LocalVerify(o, msg, raw, author, fromCount, policy, arc, deliveredAt);
         return o;
     }
 
@@ -349,18 +355,29 @@ public sealed class AuthEvaluator
     private bool SameOrganization(string d, string? author) =>
         author != null && (Related(d, author) || (_registrable(d) is { } a && a == _registrable(author)));
 
-    private void LocalVerify(AuthOutcome o, MimeMessage msg, ReadOnlySpan<byte> raw, string? author, int fromCount, AuthPolicy policy, ArcInfo? arc)
+    private void LocalVerify(AuthOutcome o, MimeMessage msg, ReadOnlySpan<byte> raw, string? author, int fromCount, AuthPolicy policy, ArcInfo? arc,
+                             long? deliveredAt)
     {
         o.Source = "local";
         var results = new List<DkimSignatureValidationResult>();
         var tagsList = new List<Dictionary<string, string>>();
         var listFields = ListFields(msg);
         var relaxedLen = new long?[2];
+        List<(HeaderOnlyVerifier.Field Field, int Index)>? sigFields = null;   // the raw DKIM-Signature fields, when needed
+        List<HeaderOnlyVerifier.Field>? fields = null;
+        int k = 0;
         foreach (var h in msg.Headers.Where(h => h.Id == HeaderId.DkimSignature).Take(MaxDkimSignatures))
         {
             DkimSignatureValidationResult r;
             using (new KeyValidation.Scope(true)) r = _dkim.Verify(msg, h);
             var tags = Tags.Parse(h.Value);
+            if (DeliveryTimeDkim.ExpiredSinceDelivery(r, tags, deliveredAt))
+            {
+                fields ??= HeaderOnlyVerifier.Fields(raw[..HeaderLength(raw)]);
+                sigFields ??= fields.Select((f, i) => (f, i)).Where(x => x.f.Name == "dkim-signature").ToList();
+                if (k < sigFields.Count) r = DeliveryTimeDkim.Verify(_dns, msg, h, fields, sigFields[k].Index);
+            }
+            k++;
             if (r.Status == DkimSignatureStatus.Pass && tags.TryGetValue("l", out var ls)
                 && long.TryParse(ls, System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out long l))
             {
@@ -533,10 +550,11 @@ public sealed class AuthEvaluator
     /// (<see cref="HeaderOnlyVerifier"/>) decides failed now; a valid aligned header signature is pending and checked
     /// at open. The key and policy names are looked up now, so open-time verification runs from the cache.
     /// </summary>
-    public AuthOutcome EvaluateHeaderOnly(MimeMessage msg, ReadOnlySpan<byte> header, long size, AuthPolicy policy) =>
-        History(msg, EvaluateHeaderOnlyCore(msg, header, size, policy));
+    /// <param name="deliveredAt">See <see cref="Evaluate"/>.</param>
+    public AuthOutcome EvaluateHeaderOnly(MimeMessage msg, ReadOnlySpan<byte> header, long size, AuthPolicy policy, long? deliveredAt = null) =>
+        History(msg, EvaluateHeaderOnlyCore(msg, header, size, policy, deliveredAt));
 
-    private AuthOutcome EvaluateHeaderOnlyCore(MimeMessage msg, ReadOnlySpan<byte> header, long size, AuthPolicy policy)
+    private AuthOutcome EvaluateHeaderOnlyCore(MimeMessage msg, ReadOnlySpan<byte> header, long size, AuthPolicy policy, long? deliveredAt)
     {
         var o = new AuthOutcome();
         int fromCount = msg.Headers.Count(h => h.Id == HeaderId.From);
@@ -551,7 +569,7 @@ public sealed class AuthEvaluator
         }
         if (policy.ProviderSealers.Length > 0 && designArh != null) o.Ignored++;
         o.Source = "local";
-        var r = _headerOnly.Verify(msg, header, size);
+        var r = _headerOnly.Verify(msg, header, size, deliveredAt);
         o.Policy = r.Policy;
         o.Reason = r.Reason;
         o.Dkim = r.Dkim;

@@ -103,7 +103,9 @@ internal sealed class HeaderOnlyVerifier(BrokeredDnsResolver dns, DmarcVerifier 
         catch (Exception) { return null; }
     }
 
-    public Result Verify(MimeMessage msg, ReadOnlySpan<byte> header, long size)
+    /// <param name="deliveredAt">Delivery time (Unix seconds): a signature whose <c>x=</c> is before it does not count, as
+    /// in full verification (<see cref="DeliveryTimeDkim"/>); null leaves <c>x=</c> to the check at open.</param>
+    public Result Verify(MimeMessage msg, ReadOnlySpan<byte> header, long size, long? deliveredAt)
     {
         var fields = Fields(header);
         var dkim = new List<DkimInfo>();
@@ -127,6 +129,8 @@ internal sealed class HeaderOnlyVerifier(BrokeredDnsResolver dns, DmarcVerifier 
                 status = "permerror";
             else if (!signed.Contains("from"))
                 status = "permerror";
+            else if (deliveredAt is { } t && DeliveryTimeDkim.Expiry(tags) is { } x && x < t)
+                status = "permerror";   // expired when delivered (MimeKit: "signature expired")
             else if (a != "rsa-sha256" && a != "ed25519-sha256") { }
             else if (tags.TryGetValue("l", out var ls) && (!long.TryParse(ls, System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out long l) || l < bodyLen)) { }
             else
@@ -170,7 +174,7 @@ internal sealed class HeaderOnlyVerifier(BrokeredDnsResolver dns, DmarcVerifier 
         };
     }
 
-    private static string Check(Field sigField, int sigIndex, List<Field> fields, Dictionary<string, string> tags, string alg, string record)
+    internal static string Check(Field sigField, int sigIndex, List<Field> fields, Dictionary<string, string> tags, string alg, string record)
     {
         var kt = Tags.Parse(record);
         string p = kt.GetValueOrDefault("p", "");

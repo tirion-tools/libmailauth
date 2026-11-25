@@ -90,6 +90,16 @@ public sealed class AuthEvaluator
         return a == b || a.EndsWith("." + b, StringComparison.Ordinal) || b.EndsWith("." + a, StringComparison.Ordinal);
     }
 
+    /// <summary>
+    /// A signing domain identical to the From domain (case and a trailing dot aside). RFC 7489 §3.1.1: identical domains
+    /// are aligned in strict mode (<c>adkim=s</c>) and in relaxed mode (<c>adkim=r</c>) alike, so a DKIM pass for such a
+    /// <c>d=</c> makes DMARC pass whatever the record says. When policy discovery ends in a temporary failure
+    /// (§6.6.3), that pass decides the result without the record; a pass for the organizational domain or another
+    /// subdomain is aligned only under relaxed mode and still needs the record.
+    /// </summary>
+    public static bool Identical(string? d, string? author) =>
+        d != null && author != null && string.Equals(d.TrimEnd('.'), author.TrimEnd('.'), StringComparison.OrdinalIgnoreCase);
+
     internal static bool TryLdh(string? s, out string norm)
     {
         norm = (s ?? "").Trim().TrimEnd('.').ToLowerInvariant();
@@ -414,6 +424,12 @@ public sealed class AuthEvaluator
                     o.Verdict = "failed";
                     o.DmarcFailed = true;
                     o.Reason = $"DMARC fail (p={o.Policy})";
+                    break;
+                case DmarcStatus.TempError when forDmarc.Any(r => r.Status == DkimSignatureStatus.Pass && Identical(r.Domain, author)):
+                    // RFC 7489 §3.1.1 / §6.6.3: the pass is aligned under adkim=s and adkim=r, so DMARC passes whatever
+                    // the record says; the policy stays unknown (o.Policy null), never a guessed p=.
+                    o.Verdict = "verified";
+                    o.Reason = "DKIM pass for the From domain itself; DMARC record not available";
                     break;
                 case DmarcStatus.TempError:
                     o.Temporary = true;

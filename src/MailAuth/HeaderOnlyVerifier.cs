@@ -166,6 +166,10 @@ internal sealed class HeaderOnlyVerifier(BrokeredDnsResolver dns, DmarcVerifier 
         {
             DmarcStatus.Pass => new Result("pending", $"aligned signature d={dm.AlignedDkimResult?.Domain} with valid b=; body hash checked at open", policy, false, dkim),
             DmarcStatus.Fail => new Result("failed", $"no aligned signature with a valid b= (p={policy}); decided without the body", policy, false, dkim),
+            // RFC 7489 §3.1.1 / §6.6.3 (AuthEvaluator.Identical): a valid b= for the From domain itself is aligned under
+            // either adkim, so the record cannot change the result; the body hash is checked at open as for a pass.
+            DmarcStatus.TempError when results.Any(r => r.Status == DkimSignatureStatus.Pass && AuthEvaluator.Identical(r.Domain, author)) =>
+                new Result("pending", "signature for the From domain itself with valid b=; DMARC record not available; body hash checked at open", policy, false, dkim),
             DmarcStatus.TempError => new Result("none", "temporary DNS failure; retried at next sync", policy, true, dkim),
             DmarcStatus.PermError => new Result("none", "DMARC permerror", policy, false, dkim),
             _ when anyPass => new Result("pending", "valid b= without a DMARC record; body hash checked at open", policy, false, dkim),

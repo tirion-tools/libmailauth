@@ -136,7 +136,11 @@ var status = ProviderVerdicts.ParseSpamStatus(value);          // also ParseSpam
   (firewalled). A sender can write none of these positions.
 - **Failing closed, never failing open:** DNS trouble yields `none` with `Temporary`, never `failed` and never
   `verified`; a broken key server of another organization cannot turn a failure into a temporary result; a
-  signature that does not count (`l=` short of the body, weak key, rsa-sha1) can only lower a verdict.
+  signature that does not count (`l=` short of the body, weak key, rsa-sha1) can only lower a verdict. One DNS
+  failure does not matter: when the DMARC result is temporary but a DKIM signature whose `d=` is the From domain
+  itself passes (aligned under `adkim=s` and `adkim=r`, RFC 7489 §3.1.1), the record could not change the result,
+  so the verdict is `verified` (header-only: pending) with the policy unknown (`Policy` null); a pass aligned only
+  under relaxed mode (the organizational domain or another subdomain) stays temporary.
 - **RSA key validation.** Each key record is validated once with BouncyCastle's full default checks (a prime modulus
   is rejected) before MimeKit sees it; only then, on the calling thread and only around MimeKit's verifier calls,
   is the per-signature re-validation skipped. A process-wide skip is never used.
@@ -159,6 +163,9 @@ var status = ProviderVerdicts.ParseSpamStatus(value);          // also ParseSpam
   valid at delivery verifies, judged now fails (MimeKit's clock), expired at delivery and a changed body fail, key
   server trouble is temporary, a revoked key is gone; header-only judges `x=` at delivery; the key-gone flag ignores
   a valid unaligned signature.
+- `IdenticalDomainTests`: a subdomain that signs as itself while its own `_dmarc` name SERVFAILs is verified (header
+  only: pending) with the policy unknown; a signature by the organizational domain or a sibling subdomain stays
+  temporary, and so does a temporary key.
 - `ParserTests`: the resolver's reply mapping, name policy, persisted rows and key state; the tag-list parser; the
   header-only field split and canonicalization; the verdict grammars; the shipped sealer-signer list.
 - `fuzz/` is a SharpFuzz harness with three targets: `tags` (the tag-list parser), `headeronly` (the header-only
